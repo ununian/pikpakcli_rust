@@ -9,7 +9,7 @@ mod args;
 mod cli;
 mod config;
 mod logger;
-mod pikpak;
+pub mod pikpak;
 mod utils;
 
 pub fn run_cmd() -> Result<()> {
