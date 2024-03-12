@@ -60,7 +60,10 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::{config::load_config, logger::setup_test_logger};
+    use crate::{
+        config::{get_client_options, load_config},
+        logger::setup_test_logger,
+    };
 
     use super::*;
 
@@ -71,7 +74,7 @@ mod tests {
             return Ok(());
         }
 
-        if let Ok(mut client) = Client::new(0) {
+        if let Ok(mut client) = Client::new(get_client_options()) {
             client.login().await.ok();
         }
 

@@ -60,7 +60,7 @@ impl Client {
         Ok(parent_id)
     }
 
-    async fn get_sub_folder_id(&self, parent_id: &str, path: &str) -> Result<FileIDType> {
+    pub async fn get_sub_folder_id(&self, parent_id: &str, path: &str) -> Result<FileIDType> {
         let dir = slash(path).context("get_folder_id")?;
 
         let infos = self.get_info_by_id(parent_id).await?;
@@ -96,7 +96,7 @@ impl Client {
         Err(anyhow::anyhow!("[get_folder_id] folder not found"))
     }
 
-    async fn get_info_by_id(&self, parent_id: &str) -> Result<Vec<Value>> {
+    pub async fn get_info_by_id(&self, parent_id: &str) -> Result<Vec<Value>> {
         let query = [
             ("parent_id", parent_id),
             ("page_token", ""),
@@ -145,7 +145,10 @@ impl Client {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{config::load_config, logger::setup_test_logger};
+    use crate::{
+        config::{get_client_options, load_config},
+        logger::setup_test_logger,
+    };
 
     #[tokio::test]
     async fn test_get_path_folder_id() -> Result<()> {
@@ -154,7 +157,7 @@ mod test {
             return Ok(());
         }
 
-        if let Ok(mut client) = Client::new(0) {
+        if let Ok(mut client) = Client::new(get_client_options()) {
             client.login().await.ok();
             let res = client.get_path_id("My Pack").await.ok();
             log::info!("{:?}", res);
@@ -170,7 +173,7 @@ mod test {
             return Ok(());
         }
 
-        if let Ok(mut client) = Client::new(0) {
+        if let Ok(mut client) = Client::new(get_client_options()) {
             client.login().await.ok();
             let res = client
                 .get_info_by_id("VNnUEooZhMP43acATLjCgCLeo1")

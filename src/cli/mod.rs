@@ -1,12 +1,12 @@
 use anyhow::Result;
 
-use crate::{args::Commands, pikpak::Client};
+use crate::{args::Commands, config::get_client_options, pikpak::Client};
 
 mod download;
 mod list;
 
 pub async fn handle(cmd: Commands, retry_times: i8) -> Result<()> {
-    let mut client = Client::new(retry_times)?;
+    let mut client = Client::new(get_client_options())?;
     client.login().await?;
 
     match cmd {

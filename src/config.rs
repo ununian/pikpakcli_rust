@@ -3,6 +3,8 @@ use std::sync::OnceLock;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
+use crate::pikpak::ClientOptions;
+
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     pub proxy: Option<String>,
@@ -26,4 +28,15 @@ pub fn load_config(path: &str) -> Result<()> {
 
 pub fn get_config() -> &'static Config {
     CONF.get().expect("config not init")
+}
+
+pub fn get_client_options() -> ClientOptions {
+    let config = get_config();
+
+    ClientOptions {
+        username: config.username.clone(),
+        password: config.password.clone(),
+        proxy: config.proxy.clone(),
+        retry_times: 3,
+    }
 }

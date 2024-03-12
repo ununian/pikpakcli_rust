@@ -86,7 +86,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::config::load_config;
+    use crate::config::{get_client_options, load_config};
     use crate::logger::setup_test_logger;
 
     use super::*;
@@ -98,7 +98,7 @@ mod tests {
             return Ok(());
         }
 
-        if let Ok(mut client) = Client::new(0) {
+        if let Ok(mut client) = Client::new(get_client_options()) {
             client.login().await.ok();
             let res = client
                 .auth_captcha_token("GET:/drive/v1/files".into())

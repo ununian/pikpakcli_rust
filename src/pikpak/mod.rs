@@ -2,13 +2,12 @@ use anyhow::Result;
 use reqwest::{header, RequestBuilder};
 use serde::{Deserialize, Serialize};
 
-use crate::config::get_config;
-
-mod captcha_token;
+pub mod captcha_token;
 pub mod download;
 pub mod file;
 pub mod folder;
-mod login;
+pub mod login;
+pub mod new;
 
 #[derive(Debug, Default)]
 pub struct Client {
@@ -28,10 +27,18 @@ const USER_AGENT: &str = "ANDROID-com.pikcloud.pikpak/1.21.0";
 const CLIENT_ID: &str = "YNxT9w7GMdWvEOKa";
 const CLIENT_SECRET: &str = "dbw2OtmVEeuUvIptb1Coyg";
 
+#[derive(Debug, Clone)]
+pub struct ClientOptions {
+    pub retry_times: i8,
+    pub username: String,
+    pub password: String,
+    pub proxy: Option<String>,
+}
+
 impl Client {
-    pub fn new(retry_times: i8) -> Result<Self> {
-        let account = get_config().username.clone();
-        let password = get_config().password.clone();
+    pub fn new(options: ClientOptions) -> Result<Self> {
+        let account = options.username.clone();
+        let password = options.password.clone();
         let device_id = format!("{:x}", md5::compute(&account));
 
         let mut headers = header::HeaderMap::new();
@@ -47,7 +54,7 @@ impl Client {
 
         let mut client_builder: reqwest::ClientBuilder =
             reqwest::Client::builder().default_headers(headers);
-        if let Some(proxy) = get_config().proxy.as_ref() {
+        if let Some(proxy) = options.proxy.as_ref() {
             client_builder = client_builder.proxy(reqwest::Proxy::all(proxy)?);
         }
         let client = client_builder.build()?;
@@ -57,7 +64,7 @@ impl Client {
             password,
             client,
             device_id,
-            retry_times,
+            retry_times: options.retry_times,
             ..Default::default()
         })
     }
