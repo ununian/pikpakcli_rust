@@ -19,10 +19,11 @@ impl Client {
     pub async fn login(&mut self) -> Result<()> {
         let mut req = self
             .client
-            .post("https://user.mypikpak.com/v1/auth/signin?client_id=".to_string() + CLIENT_ID)
+            .post("https://user.mypikpak.com/v1/auth/token")
             .json(&json!({
                 "captcha_token": self.captcha_token,
                 "client_id": CLIENT_ID,
+                "grant_type": "password",
                 "client_secret": CLIENT_SECRET,
                 "username": self.account,
                 "password": self.password,
